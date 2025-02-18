@@ -19,11 +19,12 @@ public class SeatRepository {
 
 		Connection con = DBConnection.getConnection();
 
-		String sql = "SELECT * FROM `seat` WHERE cinema_id = ?";
+		String sql = "SELECT * FROM `seat` WHERE cinema_id = ? and status = ?";
 
 		try {
 			PreparedStatement ps = con.prepareStatement(sql);
 			ps.setInt(1, cinemaId);
+			ps.setInt(2, 1);
 
 			ResultSet rs = ps.executeQuery();
 
@@ -34,7 +35,7 @@ public class SeatRepository {
 				obj.setSeatNum(rs.getString("seat_num"));
 				obj.setRow(rs.getInt("row"));
 				obj.setCol(rs.getInt("col"));
-				obj.setSeatType(rs.getString("seat_type"));
+				obj.setSeatTypeId(rs.getString("seat_type_id"));
 				obj.setPrice(rs.getDouble("price"));
 				obj.setCurrencyType(rs.getString("currency_type"));
 				obj.setStatus(rs.getInt("status"));

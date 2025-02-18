@@ -10,159 +10,104 @@
 	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
 	rel="stylesheet">
 <style>
+.seat {
+	width: 5rem;
+	height: 8rem;
+	border-radius: 5px;
+	text-align: center;
+	line-height: 2rem;
+	font-weight: bold;
+}
+
+.available {
+	background-color: #0d6efd;
+	color: white;
+}
+
+.empty {
+	background-color: #ccc;
+}
 </style>
 </head>
 <body>
 	<div class="container">
 		<h2 class="text-center my-4">Cinema Seat Layout</h2>
-		<table id="seatTable" class="table table-bordered text-center">
-			<thead>
-				<tr>
-					<th></th>
-					<!-- Empty top-left corner -->
-					<c:forEach var="col" begin="1" end="${maxCol}">
-						<th>Col ${col}</th>
-					</c:forEach>
-					<th></th>
-					<!-- Empty space for alignment -->
-				</tr>
-			</thead>
 
-			<tbody id="seatTableBody">
+		<div class="container">
+			<div class="row justify-content-center">
+
 				<c:forEach var="row" begin="1" end="${maxRow}">
-					<tr>
-						<th>Row ${row}</th>
+					<div class="col-12 d-flex align-items-center mb-2">
+						<!-- Row Label -->
+						<span class="me-2 fw-bold text-nowrap">Row ${row}</span>
 
-						<c:forEach var="col" begin="1" end="${maxCol}">
-							<c:set var="seatExists" value="false" />
-							<c:set var="seatMerged" value="false" />
-
+						<div class="seat-row d-flex justify-content-between w-100">
 							<c:forEach var="seat" items="${seatList}">
-								<c:if test="${seat.row == row && seat.col == col}">
-									<td class="seat available"
-										${seat.seatType == 2 ? 'colspan="2"' : ''}>${seat.seatNum}
-									</td>
-									<c:set var="seatMerged" value="true" />
-									<c:set var="seatExists" value="true" />
+								<c:if test="${seat.row == row}">
+									<div class="seat available text-center me-2"
+										${seat.seatTypeId == 2 ? 'style="width: 10rem;"' : ''}>
+										${seat.seatNum}</div>
 								</c:if>
 							</c:forEach>
+						</div>
 
-							<c:if test="${!seatExists}">
-								<td></td>
-							</c:if>
-
-							<c:if test="${seatMerged}">
-								<c:set var="col" value="${col + 1}" />
-							</c:if>
-						</c:forEach>
-
-						<th><button class="btn btn-primary">+</button></th>
-					</tr>
+						<!-- Add Seat Button -->
+						<button class="btn btn-sm btn-primary ms-3">+</button>
+					</div>
 				</c:forEach>
 
-				<tr>
-					<td colspan="${maxCol + 2}">
-						<button id="addRowBtn" class="btn btn-primary w-100">Add
-							Row</button>
-					</td>
-				</tr>
-			</tbody>
-
-
-			<%-- <tbody id="seatTableBody">
-				<c:forEach var="row" begin="1" end="${maxRow}">
-					<tr>
-						<th>Row ${row}</th>
-
-						<!-- Loop through all columns for this row -->
-						<c:forEach var="col" begin="1" end="${maxCol}">
-							<c:set var="seatExists" value="false" />
-							<c:set var="seatMerged" value="false" />
-
-							<c:forEach var="seat" items="${seatList}">
-
-								<!-- Check if this seat belongs to the current row and column -->
-								<c:if test="${seat.row == row && seat.col == col}">
-									<!-- Render the seat if it exists for this row and column -->
-									<c:if test="${seat.seatType == 2}">
-										<td class="seat available" colspan="2">${seat.seatNum}</td>
-										<c:set var="seatMerged" value="true" />
-									</c:if>
-									<c:if test="${seat.seatType != 2}">
-										<td class="seat available">${seat.seatNum}</td>
-										<c:set var="seatMerged" value="false" />
-									</c:if>
-
-									<c:set var="seatExists" value="true" />
-								</c:if>
-
-							</c:forEach>
-
-							<!-- If no seat exists for this row and col, render an empty td -->
-							<c:if test="${seatExists == false}">
-								<td><button class="btn btn-primary">+</button></td>
-							</c:if>
-
-						</c:forEach>
-
-						<!-- Plus sign button at the end of each row -->
-						<th>
-							<button class="btn btn-primary">+</button>
-						</th>
-					</tr>
-				</c:forEach>
-
-				<!-- Button to add a new row (this appears after the last row) -->
-				<tr>
-					<td colspan="${maxCol + 2}">
-						<button id="addRowBtn" class="btn btn-primary w-100">Add
-							Row</button>
-					</td>
-				</tr>
-			</tbody> --%>
-
-		</table>
+				<!-- Add Row Button -->
+				<button id="addRowBtn" class="btn btn-primary w-100 mt-3">Add
+					Row</button>
+			</div>
+		</div>
 
 	</div>
+
 	<script>
     // Get the "Add Row" button
     const addRowBtn = document.getElementById("addRowBtn");
 
     // Add an event listener to the button
     addRowBtn.addEventListener("click", function() {
-        // Get the table body where rows will be added
-        const tbody = document.getElementById("seatTableBody");
+        // Get the container where rows will be added
+        const container = document.querySelector('.row.justify-content-center');
 
         // Get the current row count to add a new row with the correct label
-        const currentRowCount = tbody.rows.length - 1; // Subtract 1 to ignore the button row
+        const currentRowCount = document.querySelectorAll('.seat-row').length;
 
-        // Create a new row
-        const newRow = document.createElement("tr");
+        // Create a new row container
+        const newRow = document.createElement("div");
+        newRow.classList.add("col-12", "d-flex", "align-items-center", "mb-2");
 
-        // Add the row header with the row number
-        const rowHeader = document.createElement("th");
-        rowHeader.textContent = `Row ${currentRowCount + 1}`;
-        newRow.appendChild(rowHeader);
+        // Add the row label (Row number)
+        const rowLabel = document.createElement("span");
+        rowLabel.classList.add("me-2", "fw-bold", "text-nowrap");
+        rowLabel.textContent = `Row ${currentRowCount + 1}`;
+        newRow.appendChild(rowLabel);
 
-        // Add the seat columns dynamically based on the colCount
-        for (let col = 1; col <= ${cinemaObj.colCount}; col++) {
-            const newCell = document.createElement("td");
-            newCell.classList.add("seat", "available");
-            newCell.textContent = `${currentRowCount + 1}${col}`;  // Seat label: row+col
-            newRow.appendChild(newCell);
+        // Create the seat-row div to contain the seats in this row
+        const seatRow = document.createElement("div");
+        seatRow.classList.add("seat-row", "d-flex", "justify-content-between", "w-100");
+
+        // Add seats dynamically (assuming the cinemaObj.colCount is available)
+        for (let col = 1; col <= ${cinemaObj.colCount};) {
+            const seat = document.createElement("div");
+            seat.classList.add("seat", "available", "text-center", "me-2");
+            seat.style.width = "5rem";  // Fixed width for seats
+            seat.style.height = "8rem"; // Fixed height for seats
+            seat.textContent = `${currentRowCount + 1}${col}`; // Seat label: row+col
+            seatRow.appendChild(seat);
         }
 
-        // Add the plus sign button to the end of the row
-        const plusSignCell = document.createElement("th");
-        const plusSignBtn = document.createElement("button");
-        plusSignBtn.classList.add("btn", "btn-primary");
-        plusSignBtn.textContent = "+";
-        plusSignCell.appendChild(plusSignBtn);
-        newRow.appendChild(plusSignCell);
+        // Add the seat-row div to the new row container
+        newRow.appendChild(seatRow);
 
-        // Insert the new row above the button row (before the last row)
-        tbody.insertBefore(newRow, tbody.lastElementChild);
-    })
+        // Add the row to the container
+        container.appendChild(newRow);
+    });
 </script>
+
+
 </body>
 </html>

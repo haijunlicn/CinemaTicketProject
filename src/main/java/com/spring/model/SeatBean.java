@@ -11,7 +11,7 @@ public class SeatBean {
     private String seatNum;
     private int row;
     private int col;
-    private String seatType;
+    private String seatTypeId;
     private double price;
     private String currencyType;
     private int status;
